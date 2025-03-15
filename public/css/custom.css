@@ -1,0 +1,42 @@
+/* custom.css */
+
+/* Make body background a light gray */
+body {
+    background-color: #f0f2f5;
+  }
+  
+  .navbar-brand {
+    font-weight: bold;
+    font-size: 1.2rem;
+  }
+  
+  /* Buttons spacing */
+  .nav-link, .btn {
+    margin-left: 8px;
+    margin-right: 8px;
+  }
+  
+  /* Card improvements */
+  .card {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  /* Footer smaller text */
+  footer {
+    font-size: 0.9rem;
+    color: #666;
+  }
+  
+
+/* Adjust card corner rounding
+.card {
+  border-radius: 8px;
+}
+
+.card.shadow-sm {
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.container {
+  margin-top: -80px !important;
+} */
