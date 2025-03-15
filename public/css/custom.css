@@ -1,42 +1,264 @@
-/* custom.css */
-
-/* Make body background a light gray */
+/* ------------------------------------------------
+   Global / Body
+------------------------------------------------- */
 body {
-    background-color: #f0f2f5;
-  }
-  
-  .navbar-brand {
-    font-weight: bold;
-    font-size: 1.2rem;
-  }
-  
-  /* Buttons spacing */
-  .nav-link, .btn {
-    margin-left: 8px;
-    margin-right: 8px;
-  }
-  
-  /* Card improvements */
-  .card {
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  }
-  
-  /* Footer smaller text */
-  footer {
-    font-size: 0.9rem;
-    color: #666;
-  }
-  
-
-/* Adjust card corner rounding
-.card {
-  border-radius: 8px;
+  /* Subtle diagonal stripes using repeating-linear-gradient */
+  background: 
+    linear-gradient(135deg, rgba(255,255,255,0.5) 25%, transparent 25%) 0 0,
+    linear-gradient(135deg, rgba(255,255,255,0.5) 25%, transparent 25%) 0 8px,
+    linear-gradient(135deg, transparent 75%, rgba(255,255,255,0.5) 75%) 0 0,
+    linear-gradient(135deg, transparent 75%, rgba(255,255,255,0.5) 75%) 0 8px,
+    linear-gradient(180deg, #f0f4f8, #e6eef5 85%);
+  background-size: 16px 16px;
+  background-color: #f0f4f8;
+  background-blend-mode: overlay, overlay, overlay, overlay, normal;
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
-.card.shadow-sm {
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+/* Navbar brand styling */
+.navbar-brand {
+  font-weight: bold;
+  font-size: 1.2rem;
 }
 
-.container {
-  margin-top: -80px !important;
-} */
+/* ------------------------------------------------
+   Hero Section
+------------------------------------------------- */
+/* A navy-to-midnight gradient */
+.forum-hero {
+  background: linear-gradient(135deg, #0d3b66, #1d3557);
+  min-height: 40vh;
+  display: flex;
+  align-items: center;
+  color: #fff;
+  padding: 60px 0;
+  animation: fadeInHero 1.2s ease-in-out;
+}
+
+@keyframes fadeInHero {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* CTA button with teal accent */
+.btn-forum-cta {
+  background-color: #2a9d8f;
+  border-color: #2a9d8f;
+  color: #fff;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.btn-forum-cta:hover {
+  transform: scale(1.05);
+  box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+}
+
+/* Optional lead text styling */
+.lead {
+  font-size: 1.2rem;
+  color: #f1f1f1;
+}
+
+/* ------------------------------------------------
+   Content Area
+------------------------------------------------- */
+/* Use transparent to reveal background pattern */
+.forum-content {
+  background-color: transparent;
+  padding-top: 40px;
+  padding-bottom: 40px;
+}
+
+/* ------------------------------------------------
+   Left Sidebar for Filters
+------------------------------------------------- */
+.sidebar-nav {
+  background-color: #fff;
+  border: 2px solid #2a9d8f;
+  border-radius: 6px;
+  padding: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+}
+
+.sidebar-nav .nav-link {
+  color: #2a9d8f;
+  font-weight: bold;
+  margin: 6px 0;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.sidebar-nav .nav-link:hover {
+  background-color: #2a9d8f;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 4px;
+}
+
+.sidebar-nav .nav-link.active {
+  background-color: #2a9d8f;
+  color: #fff;
+  border-radius: 4px;
+}
+
+/* ------------------------------------------------
+   Question List Items
+------------------------------------------------- */
+.question-list-item {
+  background-color: #fff;
+  border: 2px solid #2a9d8f;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+/* Optional inner content styling */
+.question-list-item-content {
+  background-color: #fdfefe;
+  padding: 8px;
+  border-radius: 4px;
+}
+
+/* ------------------------------------------------
+   "Stack of Cards" for Top Questions
+------------------------------------------------- */
+.stack-container {
+  position: relative;
+  height: 300px; /* adjust as desired */
+  overflow: visible;
+}
+
+.stack-item {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  transition: transform 0.4s ease, z-index 0.4s ease;
+}
+
+.stack-pos-0 {
+  z-index: 3;
+  transform: translateY(0) scale(1);
+}
+.stack-pos-1 {
+  z-index: 2;
+  transform: translateY(20px) scale(0.95);
+}
+.stack-pos-2 {
+  z-index: 1;
+  transform: translateY(40px) scale(0.9);
+}
+
+.stack-card {
+  border: 3px solid #2a9d8f;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  height: 100%;
+  animation: fadeInStack 0.4s ease;
+  background-color: #fff;
+}
+
+@keyframes fadeInStack {
+  0% { transform: translateY(20px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+/* Up/Down controls inside stack container */
+.stack-controls {
+  position: absolute;
+  bottom: 40px; /* Adjust to move controls closer to the cards */
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+}
+
+.stack-controls button {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  border: none;
+  transition: background 0.2s;
+}
+.stack-controls button:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+.stack-controls i {
+  font-size: 1.2rem;
+}
+
+/* ------------------------------------------------
+   Answer Stats & Overflow Blog Box
+------------------------------------------------- */
+.stats-box {
+  background-color: rgba(42, 157, 143, 0.1);
+  border: 2px solid #2a9d8f;
+  color: #2a9d8f;
+  border-radius: 6px;
+  padding: 12px;
+  text-align: center;
+  font-weight: bold;
+  min-width: 80px;
+  margin-right: 16px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.stats-box .stat-value {
+  font-size: 1.2rem;
+  margin-bottom: 2px;
+}
+
+.stats-box .stat-label {
+  font-size: 0.85rem;
+  color: #555;
+}
+
+/* Overflow Blog Box */
+.overflow-blog {
+  border: 2px solid #2a9d8f;
+  background-color: #fff;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  margin-bottom: 20px;
+  padding: 16px;
+  position: relative;
+}
+
+.overflow-blog h5 {
+  background-color: #2a9d8f;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+.overflow-blog ul {
+  margin-top: 0;
+  padding-left: 20px;
+}
+
+.overflow-blog a {
+  color: #2a9d8f;
+  text-decoration: none;
+}
+
+.overflow-blog a:hover {
+  text-decoration: underline;
+}
+
+.update-btn,
+.back-btn {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.update-btn:hover,
+.back-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}

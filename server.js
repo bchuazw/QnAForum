@@ -12,7 +12,7 @@ const User = require('./models/User');
 const indexRoutes = require('./routes/index');
 const questionRoutes = require('./routes/questions');
 const userRoutes = require('./routes/users');
-const answerRoutes = require('./routes/answers'); // optional if needed
+const answerRoutes = require('./routes/answers');
 
 const app = express();
 
@@ -47,8 +47,8 @@ app.use(session({
 
 // This middleware loads the entire User object
 app.use(async (req, res, next) => {
-  console.log('Session userId before DB lookup:', req.session.userId);
-  console.log('res.locals.currentUser before assignment:', res.locals.currentUser);
+  //console.log('Session userId before DB lookup:', req.session.userId);
+  //console.log('res.locals.currentUser before assignment:', res.locals.currentUser);
 
   if (req.session.userId) {
     const user = await User.findById(req.session.userId).exec();
@@ -57,8 +57,8 @@ app.use(async (req, res, next) => {
     res.locals.currentUser = null;
   }
 
-  // Optional second log to confirm the final value
-  console.log('res.locals.currentUser after assignment:', res.locals.currentUser);
+  // confirm the final value
+  //console.log('res.locals.currentUser after assignment:', res.locals.currentUser);
 
   next();
 });
