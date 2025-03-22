@@ -5,10 +5,12 @@ const User = require('../models/User');
 const Question = require('../models/Question');
 const Answer = require('../models/Answer');
 const requireLogin = require('../middlewares/requireLogin');
+ 
+// No need to require Multer for profile picture uploads now
+// const upload = require('../middlewares/upload'); 
 
 // GET /users/register
 router.get('/register', (req, res) => {
-  // Render with no error by default
   res.render('users/Register', { errorMsg: null });
 });
 
@@ -22,32 +24,23 @@ router.post('/register', async (req, res) => {
     return res.redirect('/');
   } catch (err) {
     console.error('Registration error:', err);
-
     let errorMsg = 'Error registering user. Please check your input.';
-
-    // If it's a Mongoose validation error
     if (err.name === 'ValidationError') {
-      // Combine all validation messages
       const messages = Object.values(err.errors).map(e => e.message);
       errorMsg = messages.join(' ');
-    }
-    // If it's a duplicate key error (username or email)
-    else if (err.code === 11000) {
+    } else if (err.code === 11000) {
       if (err.keyValue.username) {
         errorMsg = 'Username is already taken.';
       } else if (err.keyValue.email) {
         errorMsg = 'Email is already in use.';
       }
     }
-
-    // Re-render register page with the error
     return res.render('users/Register', { errorMsg });
   }
 });
 
 // GET /users/login
 router.get('/login', (req, res) => {
-  // By default, no error message
   res.render('users/Login', { errorMsg: null });
 });
 
@@ -56,13 +49,11 @@ router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   try {
     const user = await User.findOne({ email });
-    // If user not found OR password mismatch => show an error on login page
     if (!user || user.password !== password) {
       return res.render('users/Login', {
         errorMsg: 'Invalid credentials. Please check your email or password.'
       });
     }
-
     console.log('Logged in as:', user.username);
     req.session.userId = user._id;
     res.redirect('/');
@@ -78,8 +69,7 @@ router.get('/logout', (req, res) => {
   res.redirect('/');
 });
 
-// GET /users/profile (protected route)
-// Calculate reputation as the sum of all question votes and answer votes.
+/// GET /users/profile (protected route)
 router.get('/profile', requireLogin, async (req, res) => {
   const user = await User.findById(req.session.userId);
   if (!user) return res.redirect('/users/login');
@@ -98,12 +88,18 @@ router.get('/profile', requireLogin, async (req, res) => {
   const aScore = answerVotesAggregate.length > 0 ? answerVotesAggregate[0].totalVotes : 0;
   const reputation = qScore + aScore;
 
+  // Fetch all questions and answers for this user (history)
+  const userQuestions = await Question.find({ author: user._id }).sort({ createdAt: -1 }).exec();
+  const userAnswers = await Answer.find({ author: user._id }).sort({ createdAt: -1 }).exec();
+
   res.render('users/Profile', {
     user,
     currentUser: user,
     questionsCount: qScore,
     answersCount: aScore,
-    reputation
+    reputation,
+    userQuestions,
+    userAnswers
   });
 });
 

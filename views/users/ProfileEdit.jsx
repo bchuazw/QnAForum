@@ -1,9 +1,22 @@
 // views/users/ProfileEdit.jsx
-const React = require('react');
-const Layout = require('../layout/Layout');
+import React from 'react';
+import Layout from '../layout/Layout';
 
 function ProfileEdit(props) {
   const { user, currentUser } = props;
+
+  // List of default profile pictures (ensure these images exist in public/images/)
+  const defaultPics = [
+    '/images/avatar1.png',
+    '/images/avatar2.png',
+    '/images/avatar3.png',
+    '/images/avatar4.png',
+    '/images/avatar5.png',
+    '/images/avatar6.png',
+    '/images/avatar7.png',
+    '/images/avatar8.png',
+    '/images/avatar9.png'
+  ];
 
   return (
     <Layout title="Edit Profile" currentUser={currentUser}>
@@ -53,15 +66,33 @@ function ProfileEdit(props) {
                 defaultValue={user.bio}
               ></textarea>
             </div>
+            {/* Default Profile Picture Selection */}
             <div className="mb-3">
-              <label htmlFor="profilePic" className="form-label">Profile Picture URL</label>
-              <input
-                type="text"
-                id="profilePic"
-                name="profilePic"
-                className="form-control"
-                defaultValue={user.profilePic}
-              />
+              <label className="form-label">Select a Profile Picture</label>
+              <div className="d-flex flex-wrap">
+                {defaultPics.map((pic, idx) => (
+                  <label key={idx} className="me-3 text-center" style={{ cursor: 'pointer' }}>
+                    <input
+                      type="radio"
+                      name="profilePic"
+                      value={pic}
+                      defaultChecked={user.profilePic === pic || (!user.profilePic && idx === 0)}
+                      style={{ marginRight: '5px' }}
+                    />
+                    <img
+                      src={pic}
+                      alt={`avatar${idx}`}
+                      style={{
+                        width: '60px',
+                        height: '60px',
+                        objectFit: 'cover',
+                        border: user.profilePic === pic ? '2px solid #2a9d8f' : '1px solid #ddd',
+                        borderRadius: '50%'
+                      }}
+                    />
+                  </label>
+                ))}
+              </div>
             </div>
             <button type="submit" className="btn btn-primary">Save Changes</button>
             <a href="/users/profile" className="btn btn-secondary ms-2">Cancel</a>
@@ -72,4 +103,4 @@ function ProfileEdit(props) {
   );
 }
 
-module.exports = ProfileEdit;
+export default ProfileEdit;
