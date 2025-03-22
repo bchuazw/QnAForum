@@ -1,4 +1,3 @@
-// views/layout/Layout.jsx
 const React = require('react');
 
 function Layout(props) {
@@ -10,7 +9,7 @@ function Layout(props) {
     <html>
       <head>
         <meta charSet="utf-8" />
-        <title>{props.title || 'My Q&A Forum'}</title>
+        <title>{props.title || 'ChillSeek'}</title>
         
         {/* Bootstrap CSS */}
         <link
@@ -18,7 +17,7 @@ function Layout(props) {
           href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
         />
         
-        {/* Bootstrap Icons (needed for <i class="bi ..."></i> icons) */}
+        {/* Bootstrap Icons */}
         <link
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
@@ -28,9 +27,9 @@ function Layout(props) {
       </head>
       <body>
         {/* NAVBAR */}
-        <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+        <nav className="navbar navbar-expand-lg navbar-dark custom-navbar">
           <div className="container-fluid">
-            <a className="navbar-brand" href="/">My Q&A Forum</a>
+            <a className="navbar-brand custom-brand" href="/">ChillSeek</a>
             <button
               className="navbar-toggler"
               type="button"
@@ -47,22 +46,22 @@ function Layout(props) {
                 {loggedIn ? (
                   <>
                     <li className="nav-item">
-                      <a className="nav-link" href="/users/profile">{user.username}</a>
+                      <a className="nav-link custom-nav-link" href="/users/profile">{user.username}</a>
                     </li>
                     <li className="nav-item">
-                      <a className="nav-link" href="/questions/ask">Ask Question</a>
+                      <a className="nav-link custom-nav-link" href="/questions/ask">Ask Question</a>
                     </li>
                     <li className="nav-item">
-                      <a className="nav-link" href="/users/logout">Logout</a>
+                      <a className="nav-link custom-nav-link" href="/users/logout">Logout</a>
                     </li>
                   </>
                 ) : (
                   <>
                     <li className="nav-item">
-                      <a className="nav-link" href="/users/login">Login</a>
+                      <a className="nav-link custom-nav-link" href="/users/login">Login</a>
                     </li>
                     <li className="nav-item">
-                      <a className="nav-link" href="/users/register">Sign Up</a>
+                      <a className="nav-link custom-nav-link" href="/users/register">Sign Up</a>
                     </li>
                   </>
                 )}
@@ -71,13 +70,8 @@ function Layout(props) {
           </div>
         </nav>
 
-        <div className="container mt-4">
-          {props.children}
-        </div>
-
-        <footer className="border-top py-3 mt-4 text-center text-muted">
-          <small>© 2025 My Q&A Forum. All rights reserved.</small>
-        </footer>
+        {/* Render children directly without extra container */}
+        {props.children}
 
         {/* Bootstrap JS */}
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
