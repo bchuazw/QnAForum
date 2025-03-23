@@ -100,3 +100,5 @@ Express‑session integration to maintain user login state across routes.
 
 Middleware:
 A requireLogin middleware to protect routes that require authentication.
+
+Home page has twitter and github icons that link to my contact information.
