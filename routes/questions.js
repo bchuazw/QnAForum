@@ -5,48 +5,52 @@ const Question = require('../models/Question');
 const Answer = require('../models/Answer');
 const requireLogin = require('../middlewares/requireLogin');
 
-// routes/questions.js
+// GET /questions
 router.get('/', async (req, res) => {
-  const sort = req.query.sort || 'newest';
-  const tagFilter = req.query.tag || null; // <-- get the tag from query param
-  
-  let sortObj = {};
+  try {
+    const sort = req.query.sort || 'newest';
+    let sortObj = {};
 
-  if (sort === 'newest') {
-    sortObj = { createdAt: -1 };
-  } else if (sort === 'unanswered') {
-    // ...
-    sortObj = { createdAt: -1 };
-  } else if (sort === 'upvoted') {
-    sortObj = { votes: -1 };
-  } else {
-    sortObj = { updatedAt: -1 };
+    if (sort === 'newest') {
+      sortObj = { createdAt: -1 };
+    } else if (sort === 'unanswered') {
+      // Typically you'd filter or sort for unanswered. For now just sorting by createdAt as well:
+      sortObj = { createdAt: -1 };
+    } else if (sort === 'upvoted') {
+      sortObj = { votes: -1 };
+    } else {
+      // fallback or 'active'
+      sortObj = { updatedAt: -1 };
+    }
+
+    // 1) Fetch all questions with their author populated
+    //    Using .lean() so we can directly attach custom fields to each question object
+    const questions = await Question.find({})
+      .populate('author')
+      .sort(sortObj)
+      .lean();
+
+    // 2) For each question, count how many answers it has and store it in question.answersCount
+    for (let q of questions) {
+      const count = await Answer.countDocuments({ question: q._id });
+      q.answersCount = count;
+    }
+
+    // 3) Render the Index.jsx page, passing questions and currentSort
+    //    Also pass currentUser if you’re using that for your navbar, etc.
+    res.render('questions/Index', {
+      questions,
+      currentSort: sort,
+      currentUser: res.locals.currentUser
+    });
+  } catch (err) {
+    console.error('Error fetching questions:', err);
+    res.status(500).send('Error fetching questions');
   }
-
-  // Build a query object
-  const query = {};
-
-  // If tagFilter is present, only return questions whose tags array includes that tag
-  if (tagFilter) {
-    query.tags = tagFilter; // e.g. { tags: 'python' }
-  }
-
-  // Populate author so we can display author info
-  const questions = await Question.find(query)
-    .populate('author')
-    .sort(sortObj)
-    .exec();
-
-  res.render('questions/Index', {
-    questions,
-    currentSort: sort
-  });
 });
-
 
 // GET /questions/ask => must be logged in
 router.get('/ask', requireLogin, (req, res) => {
-  // pass currentUser
   res.render('questions/Ask', { currentUser: res.locals.currentUser });
 });
 
@@ -68,18 +72,22 @@ router.post('/', requireLogin, async (req, res) => {
   }
 });
 
-// GET /questions/:id
+// GET /questions/:id - show a single question with its answers and answer count
 router.get('/:id', async (req, res) => {
   try {
     const question = await Question.findById(req.params.id)
       .populate('author')
       .exec();
+
+    // Attach answersCount for the question
+    const qCount = await Answer.countDocuments({ question: question._id });
+    question._doc.answersCount = qCount;
+
     const answers = await Answer.find({ question: question._id })
       .populate('author')
       .sort({ votes: -1 })
       .exec();
 
-    // pass currentUser, plus optional errorMsg if you want to show errors
     res.render('questions/Show', {
       question,
       answers,
@@ -101,22 +109,18 @@ router.post('/:id/vote', requireLogin, async (req, res) => {
     const question = await Question.findById(req.params.id);
     if (!question) return res.status(404).send('Question not found');
 
-    // Check if this user has already voted
-    const existingVoteIndex = question.voters.findIndex(v => 
+    const existingVoteIndex = question.voters.findIndex(v =>
       v.user.toString() === req.session.userId.toString()
     );
 
     if (existingVoteIndex === -1) {
-      // No existing vote, add new vote
       question.voters.push({ user: req.session.userId, vote: voteValue });
       question.votes += voteValue;
     } else {
       const existingVote = question.voters[existingVoteIndex].vote;
       if (existingVote === voteValue) {
-        // If user clicks the same vote, do nothing
         return res.redirect(`/questions/${question._id}`);
       } else {
-        // User changes vote: update the vote and adjust net votes by the difference
         question.voters[existingVoteIndex].vote = voteValue;
         question.votes += (voteValue - existingVote);
       }
@@ -134,13 +138,14 @@ router.post('/:id/vote', requireLogin, async (req, res) => {
 router.post('/:id/answers', requireLogin, async (req, res) => {
   try {
     const questionId = req.params.id;
-    const { body } = req.body; // "body" is the text of the answer
+    const { body } = req.body;
 
-    // If user left the body empty, re-render with an error message
     if (!body || !body.trim()) {
-      // re-fetch question & answers to re-render Show page
       const question = await Question.findById(questionId).populate('author').exec();
-      const answers = await Answer.find({ question: questionId }).populate('author').sort({ votes: -1 }).exec();
+      const answers = await Answer.find({ question: questionId })
+        .populate('author')
+        .sort({ votes: -1 })
+        .exec();
 
       return res.render('questions/Show', {
         question,
@@ -150,7 +155,6 @@ router.post('/:id/answers', requireLogin, async (req, res) => {
       });
     }
 
-    // Otherwise, create a new answer
     const newAnswer = new Answer({
       body,
       question: questionId,
@@ -158,7 +162,6 @@ router.post('/:id/answers', requireLogin, async (req, res) => {
     });
     await newAnswer.save();
 
-    // Redirect back to the question page
     res.redirect(`/questions/${questionId}`);
   } catch (err) {
     console.error(err);
@@ -172,7 +175,6 @@ router.get('/:id/edit', requireLogin, async (req, res) => {
     const question = await Question.findById(req.params.id).populate('author');
     if (!question) return res.status(404).send('Question not found');
 
-    // Only the author can edit
     if (question.author._id.toString() !== req.session.userId.toString()) {
       return res.status(403).send('Forbidden');
     }
@@ -190,12 +192,10 @@ router.post('/:id/edit', requireLogin, async (req, res) => {
     const question = await Question.findById(req.params.id).populate('author');
     if (!question) return res.status(404).send('Question not found');
 
-    // Check if current user is the author
     if (question.author._id.toString() !== req.session.userId.toString()) {
       return res.status(403).send('Forbidden');
     }
 
-    // Update fields
     question.title = req.body.title;
     question.body = req.body.body;
     question.tags = req.body.tags.split(',').map(t => t.trim());
@@ -219,7 +219,7 @@ router.post('/:id/delete', requireLogin, async (req, res) => {
     }
 
     await question.remove();
-    res.redirect('/questions'); // or wherever you want to go after deleting
+    res.redirect('/questions');
   } catch (err) {
     console.error(err);
     res.status(400).send('Error deleting question');
