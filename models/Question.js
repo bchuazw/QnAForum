@@ -25,4 +25,19 @@ QuestionSchema.virtual('answersCount', {
   count: true
 });
 
+// Cascade delete answers when a question is deleted using findOneAndDelete
+QuestionSchema.pre('findOneAndDelete', async function(next) {
+  try {
+    // 'this' holds the query filter
+    const doc = await this.model.findOne(this.getFilter());
+    if (doc) {
+      // Delete all answers that reference this question's _id
+      await mongoose.model('Answer').deleteMany({ question: doc._id });
+    }
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = mongoose.model('Question', QuestionSchema);

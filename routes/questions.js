@@ -218,7 +218,8 @@ router.post('/:id/delete', requireLogin, async (req, res) => {
       return res.status(403).send('Forbidden');
     }
 
-    await question.remove();
+    // Use findOneAndDelete so the pre hook runs
+    await Question.findOneAndDelete({ _id: req.params.id });
     res.redirect('/questions');
   } catch (err) {
     console.error(err);

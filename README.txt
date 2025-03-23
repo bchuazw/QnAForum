@@ -55,6 +55,9 @@ Question Stack on Home Page:
 A “Highest Upvoted Questions” section on the home page using a “stack of cards” layout.
 Rotating stack controls (up/down arrows) with smooth slide animations to cycle through top questions.
 
+Deleting:
+Deletes answers tied to the question, cascade style.
+
 3. Answer Management
 
 Posting Answers:

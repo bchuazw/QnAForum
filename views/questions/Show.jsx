@@ -1,15 +1,15 @@
 // views/questions/Show.jsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import Layout from '../layout/Layout';
 
 /**
  * Helper to format "time ago" logic.
- * @param {Date} date - The creation date/time of the item.
- * @returns {string} - e.g. "just now", "10 minutes ago", "2 hours ago", else date/time.
+ * @param {Date} date - The creation date/time.
+ * @returns {string} - e.g. "just now", "10 minutes ago", "2 hours ago", or a full date/time string.
  */
 function formatTimeAgo(date) {
   const now = new Date();
-  const diffMs = now - date; // difference in milliseconds
+  const diffMs = now - date;
   const diffMins = Math.floor(diffMs / 60000);
 
   if (diffMins < 5) {
@@ -18,20 +18,17 @@ function formatTimeAgo(date) {
   if (diffMins < 60) {
     return `${diffMins} minute${diffMins !== 1 ? 's' : ''} ago`;
   }
-
   const diffHours = Math.floor(diffMins / 60);
   if (diffHours < 24) {
     return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
   }
-
-  // Over 24 hours => show date/time
   return date.toLocaleString();
 }
 
 function Show(props) {
   const { question, answers, currentUser, errorMsg } = props;
 
-  // For question up/downvote
+  // Determine if the user has up/downvoted the question
   let userVoteQuestion = 0;
   if (currentUser && question.voters) {
     const foundVote = question.voters.find(
@@ -40,17 +37,16 @@ function Show(props) {
     if (foundVote) userVoteQuestion = foundVote.vote;
   }
 
-  // Format question's creation time
+  // Format question creation time
   let qTimeDisplay = '';
   if (question.createdAt) {
     const createdDate = new Date(question.createdAt);
     const timeAgo = formatTimeAgo(createdDate);
-    const fullDate = createdDate.toLocaleString(); 
-    qTimeDisplay = `${timeAgo} at ${fullDate}`; 
-    // e.g. "5 hours ago at 1/1/2025, 12:00 PM"
+    const fullDate = createdDate.toLocaleString();
+    qTimeDisplay = `${timeAgo} at ${fullDate}`;
   }
 
-  // For answer up/downvotes
+  // Determine if the user has up/downvoted each answer
   const userVotes = {};
   answers.forEach(ans => {
     if (currentUser && ans.voters) {
@@ -62,6 +58,33 @@ function Show(props) {
       userVotes[ans._id] = 0;
     }
   });
+
+  // useEffect to set up the answer deletion modal logic
+  useEffect(() => {
+    // This script handles answer deletion using a modal
+    const modalEl = document.getElementById('deleteAnswerModal');
+    let answerDeleteUrl = '';
+    if (modalEl) {
+      modalEl.addEventListener('show.bs.modal', function (event) {
+        // Button that triggered the modal
+        const button = event.relatedTarget;
+        answerDeleteUrl = button.getAttribute('data-delete-url');
+      });
+      const confirmBtn = document.getElementById('confirmDeleteAnswerBtn');
+      if (confirmBtn) {
+        confirmBtn.addEventListener('click', function () {
+          if (answerDeleteUrl) {
+            // Create and submit a form to delete the answer
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = answerDeleteUrl;
+            document.body.appendChild(form);
+            form.submit();
+          }
+        });
+      }
+    }
+  }, []);
 
   return (
     <Layout title={question.title} currentUser={currentUser}>
@@ -78,11 +101,7 @@ function Show(props) {
           <div className="col-auto text-center">
             <form method="POST" action={`/questions/${question._id}/vote`}>
               <input type="hidden" name="voteType" value="up" />
-              <button
-                type="submit"
-                className="btn p-0 border-0"
-                style={{ background: 'none' }}
-              >
+              <button type="submit" className="btn p-0 border-0" style={{ background: 'none' }}>
                 {userVoteQuestion === 1 ? (
                   <i className="bi bi-caret-up-fill fs-3 text-success"></i>
                 ) : (
@@ -93,11 +112,7 @@ function Show(props) {
             <div className="fw-bold fs-5">{question.votes}</div>
             <form method="POST" action={`/questions/${question._id}/vote`}>
               <input type="hidden" name="voteType" value="down" />
-              <button
-                type="submit"
-                className="btn p-0 border-0"
-                style={{ background: 'none' }}
-              >
+              <button type="submit" className="btn p-0 border-0" style={{ background: 'none' }}>
                 {userVoteQuestion === -1 ? (
                   <i className="bi bi-caret-down-fill fs-3 text-danger"></i>
                 ) : (
@@ -114,13 +129,9 @@ function Show(props) {
                 <p className="card-text">{question.body}</p>
                 <div className="mb-2">
                   {question.tags.map(tag => (
-                    <span key={tag} className="badge bg-primary me-1">
-                      {tag}
-                    </span>
+                    <span key={tag} className="badge bg-primary me-1">{tag}</span>
                   ))}
                 </div>
-
-                {/* Question Author & Time */}
                 <small className="text-muted d-block">
                   Asked by{' '}
                   {question.author && question.author.profilePic && (
@@ -139,12 +150,9 @@ function Show(props) {
                   {question.author ? question.author.username : 'unknown'}
                 </small>
                 {qTimeDisplay && (
-                  <small className="text-muted d-block">
-                    {qTimeDisplay}
-                  </small>
+                  <small className="text-muted d-block">{qTimeDisplay}</small>
                 )}
 
-                {/* Edit/Delete if user is author */}
                 {currentUser && question.author &&
                   String(currentUser._id) === String(question.author._id) && (
                     <div className="mt-3">
@@ -154,15 +162,15 @@ function Show(props) {
                       >
                         Edit
                       </a>
-                      <form
-                        method="POST"
-                        action={`/questions/${question._id}/delete`}
-                        style={{ display: 'inline' }}
+                      {/* Delete button that triggers the modal */}
+                      <button
+                        type="button"
+                        className="btn btn-outline-danger btn-sm"
+                        data-bs-toggle="modal"
+                        data-bs-target="#deleteQuestionModal"
                       >
-                        <button type="submit" className="btn btn-outline-danger btn-sm">
-                          Delete
-                        </button>
-                      </form>
+                        Delete
+                      </button>
                     </div>
                 )}
               </div>
@@ -173,7 +181,6 @@ function Show(props) {
         {/* Answers Section */}
         <h4 className="mb-3">Answers</h4>
         {answers.map(ans => {
-          // Format answer creation time
           let ansTimeDisplay = '';
           if (ans.createdAt) {
             const ansDate = new Date(ans.createdAt);
@@ -181,17 +188,12 @@ function Show(props) {
             const fullDate = ansDate.toLocaleString();
             ansTimeDisplay = `${timeAgo} at ${fullDate}`;
           }
-
           return (
             <div key={ans._id} className="row mb-3">
               <div className="col-auto text-center">
                 <form method="POST" action={`/answers/${ans._id}/vote`}>
                   <input type="hidden" name="voteType" value="up" />
-                  <button
-                    type="submit"
-                    className="btn p-0 border-0"
-                    style={{ background: 'none' }}
-                  >
+                  <button type="submit" className="btn p-0 border-0" style={{ background: 'none' }}>
                     {userVotes[ans._id] === 1 ? (
                       <i className="bi bi-caret-up-fill fs-3 text-success"></i>
                     ) : (
@@ -202,11 +204,7 @@ function Show(props) {
                 <div className="fw-bold">{ans.votes}</div>
                 <form method="POST" action={`/answers/${ans._id}/vote`}>
                   <input type="hidden" name="voteType" value="down" />
-                  <button
-                    type="submit"
-                    className="btn p-0 border-0"
-                    style={{ background: 'none' }}
-                  >
+                  <button type="submit" className="btn p-0 border-0" style={{ background: 'none' }}>
                     {userVotes[ans._id] === -1 ? (
                       <i className="bi bi-caret-down-fill fs-3 text-danger"></i>
                     ) : (
@@ -215,15 +213,12 @@ function Show(props) {
                   </button>
                 </form>
               </div>
-
-              {/* Answer content */}
               <div className="col">
                 <div className="card shadow-sm border-0">
                   <div className="card-body">
                     <p className="mb-2">{ans.body}</p>
                   </div>
-                  <div className="card-footer text-muted d-flex justify-content-between align-items-center">
-                    {/* Left side: answer author */}
+                  <div className="card-footer d-flex justify-content-between align-items-center">
                     <div className="d-flex align-items-center">
                       {ans.author && ans.author.profilePic && (
                         <img
@@ -240,13 +235,10 @@ function Show(props) {
                       )}
                       <small>by {ans.author ? ans.author.username : 'unknown'}</small>
                     </div>
-
-                    {/* Right side: time display */}
                     <div className="d-flex align-items-center">
                       {ansTimeDisplay && (
                         <small className="me-3">{ansTimeDisplay}</small>
                       )}
-                      {/* Edit/Delete if user is author */}
                       {currentUser && ans.author &&
                         String(currentUser._id) === String(ans.author._id) && (
                           <>
@@ -256,15 +248,16 @@ function Show(props) {
                             >
                               Edit
                             </a>
-                            <form
-                              method="POST"
-                              action={`/answers/${ans._id}/delete`}
-                              style={{ display: 'inline' }}
+                            {/* Answer delete button triggers the answer delete modal */}
+                            <button
+                              type="button"
+                              className="btn btn-outline-danger btn-sm"
+                              data-bs-toggle="modal"
+                              data-bs-target="#deleteAnswerModal"
+                              data-delete-url={`/answers/${ans._id}/delete`}
                             >
-                              <button type="submit" className="btn btn-outline-danger btn-sm">
-                                Delete
-                              </button>
-                            </form>
+                              Delete
+                            </button>
                           </>
                       )}
                     </div>
@@ -290,13 +283,90 @@ function Show(props) {
             </div>
             <div className="d-flex align-items-center">
               <button type="submit" className="btn btn-primary me-3">Post Answer</button>
-              <a href="/questions" className="btn btn-secondary">
-                🔙 Back
-              </a>
+              <a href="/questions" className="btn btn-secondary">🔙 Back</a>
             </div>
           </form>
         </div>
       </div>
+
+      {/* Modal for Question Delete Confirmation */}
+      <div
+        className="modal fade"
+        id="deleteQuestionModal"
+        tabIndex="-1"
+        aria-labelledby="deleteQuestionModalLabel"
+        aria-hidden="true"
+      >
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="deleteQuestionModalLabel">Confirm Deletion</h5>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div className="modal-body">
+              Are you sure you want to delete this question? This action cannot be undone.
+            </div>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <form method="POST" action={`/questions/${question._id}/delete`}>
+                <button type="submit" className="btn btn-danger">Confirm Delete</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Modal for Answer Delete Confirmation */}
+      <div
+        className="modal fade"
+        id="deleteAnswerModal"
+        tabIndex="-1"
+        aria-labelledby="deleteAnswerModalLabel"
+        aria-hidden="true"
+      >
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="deleteAnswerModalLabel">Confirm Answer Deletion</h5>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div className="modal-body">
+              Are you sure you want to delete this answer? This action cannot be undone.
+            </div>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button type="button" id="confirmDeleteAnswerBtn" className="btn btn-danger">
+                Confirm Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Inline script to handle Answer Delete Modal */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
+            (function() {
+              let answerDeleteUrl = '';
+              const deleteAnswerModal = document.getElementById('deleteAnswerModal');
+              deleteAnswerModal.addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget;
+                answerDeleteUrl = button.getAttribute('data-delete-url');
+              });
+              document.getElementById('confirmDeleteAnswerBtn').addEventListener('click', function() {
+                if(answerDeleteUrl) {
+                  const form = document.createElement('form');
+                  form.method = 'POST';
+                  form.action = answerDeleteUrl;
+                  document.body.appendChild(form);
+                  form.submit();
+                }
+              });
+            })();
+          `,
+        }}
+      />
     </Layout>
   );
 }

@@ -85,18 +85,22 @@ router.post('/:id/edit', requireLogin, async (req, res) => {
   }
 });
 
-// POST /answers/:id/delete - Delete answer if current user is the author
+// POST /answers/:id/delete - remove if user is author
 router.post('/:id/delete', requireLogin, async (req, res) => {
   try {
     const answer = await Answer.findById(req.params.id).populate('author');
     if (!answer) return res.status(404).send('Answer not found');
 
+    // Only allow deletion if the current user is the author of the answer
     if (answer.author._id.toString() !== req.session.userId.toString()) {
       return res.status(403).send('Forbidden');
     }
 
     const questionId = answer.question;
-    await answer.remove();
+    
+    // Delete the answer using findByIdAndDelete
+    await Answer.findByIdAndDelete(answer._id);
+    
     res.redirect(`/questions/${questionId}`);
   } catch (err) {
     console.error(err);
