@@ -18,7 +18,7 @@ function Profile(props) {
       {/* Gradient Cover Banner */}
       <div
         style={{
-          height: '180px',
+          height: '220px',
           background: 'linear-gradient(135deg, #667eea, #764ba2)',
           position: 'relative'
         }}
@@ -27,17 +27,17 @@ function Profile(props) {
           style={{
             position: 'absolute',
             inset: 0,
-            backgroundColor: 'rgba(0,0,0,0.2)'
+            backgroundColor: 'rgba(0,0,0,0.3)'
           }}
         />
       </div>
 
       {/* Profile Card */}
-      <div className="container" style={{ marginTop: '-80px' }}>
+      <div className="container" style={{ marginTop: '-100px', paddingBottom: '20px' }}>
         <div className="row justify-content-center">
           <div className="col-md-8">
-            <div className="card shadow-sm">
-              <div className="card-body">
+            <div className="card shadow-lg" style={{ borderRadius: '12px', overflow: 'hidden' }}>
+              <div className="card-body p-4">
                 <div className="d-flex align-items-center">
                   {/* Profile Image */}
                   <div className="me-4" style={{ width: '120px', height: '120px' }}>
@@ -49,8 +49,7 @@ function Profile(props) {
                         width: '120px',
                         height: '120px',
                         objectFit: 'cover',
-                        border: '4px solid white',
-                        backgroundColor: 'white'
+                        border: '4px solid white'
                       }}
                     />
                   </div>
@@ -67,23 +66,25 @@ function Profile(props) {
               </div>
 
               {/* Stats Row */}
-              <div className="row text-center px-3 py-2">
-                <div className="col">
-                  <h6 className="text-uppercase text-muted mb-1">Question Score</h6>
-                  <p className="fw-bold mb-0">{questionsCount}</p>
-                </div>
-                <div className="col">
-                  <h6 className="text-uppercase text-muted mb-1">Answer Score</h6>
-                  <p className="fw-bold mb-0">{answersCount}</p>
-                </div>
-                <div className="col">
-                  <h6 className="text-uppercase text-muted mb-1">Reputation</h6>
-                  <p className="fw-bold mb-0">{reputation}</p>
+              <div className="card-footer bg-light">
+                <div className="row text-center">
+                  <div className="col">
+                    <h6 className="text-uppercase text-muted mb-1">Question Score</h6>
+                    <p className="fw-bold mb-0">{questionsCount}</p>
+                  </div>
+                  <div className="col">
+                    <h6 className="text-uppercase text-muted mb-1">Answer Score</h6>
+                    <p className="fw-bold mb-0">{answersCount}</p>
+                  </div>
+                  <div className="col">
+                    <h6 className="text-uppercase text-muted mb-1">Reputation</h6>
+                    <p className="fw-bold mb-0">{reputation}</p>
+                  </div>
                 </div>
               </div>
 
-              {/* Card Footer */}
-              <div className="card-footer text-end">
+              {/* Card Footer for Edit Button */}
+              <div className="card-footer bg-white text-end">
                 <a href="/users/profile/edit" className="btn btn-warning btn-sm">
                   Edit Profile
                 </a>
@@ -99,16 +100,20 @@ function Profile(props) {
         <div className="row g-4">
           {/* User's Questions */}
           <div className="col-md-6">
-            <h5 className="mb-3">Your Questions</h5>
-            {userQuestions && userQuestions.length > 0 ? (
-              <div className="row row-cols-1 g-3">
-                {userQuestions.map((q) => (
-                  <div className="col" key={q._id}>
-                    <div className="card h-100">
-                      <div className="card-body">
+            <div className="card shadow-sm">
+              <div className="card-header bg-primary text-white">
+                Your Questions
+              </div>
+              {/* User's Questions */}
+                <div className="card-body">
+                  {userQuestions && userQuestions.length > 0 ? (
+                    userQuestions.map((q) => (
+                      <div key={q._id} className="mb-3">
+                        {/* Use text-primary for a noticeable link color, 
+                            and remove "text-decoration-none" so we can show an underline on hover */}
                         <a
                           href={`/questions/${q._id}`}
-                          className="card-title h5 text-decoration-none"
+                          className="fw-bold text-primary question-link"
                         >
                           {q.title}
                         </a>
@@ -116,41 +121,39 @@ function Profile(props) {
                           {q.body.substring(0, 100)}...
                         </p>
                       </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-muted">No questions posted yet.</p>
-            )}
+                    ))
+                  ) : (
+                    <p className="text-muted">No questions posted yet.</p>
+                  )}
+                </div>
+            </div>
           </div>
-
           {/* User's Answers */}
           <div className="col-md-6">
-            <h5 className="mb-3">Your Answers</h5>
-            {userAnswers && userAnswers.length > 0 ? (
-              <div className="row row-cols-1 g-3">
-                {userAnswers.map((a) => (
-                  <div className="col" key={a._id}>
-                    <div className="card h-100">
-                      <div className="card-body">
-                        <a
-                          href={`/questions/${a.question}`}
-                          className="card-title h5 text-decoration-none"
-                        >
-                          View Question
-                        </a>
-                        <p className="card-text text-muted mb-1">
-                          {a.body.substring(0, 100)}...
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+            <div className="card shadow-sm">
+              <div className="card-header bg-success text-white">
+                Your Answers
               </div>
-            ) : (
-              <p className="text-muted">No answers posted yet.</p>
-            )}
+              <div className="card-body">
+                {userAnswers && userAnswers.length > 0 ? (
+                  userAnswers.map((a) => (
+                    <div key={a._id} className="mb-3">
+                      <a
+                        href={`/questions/${a.question}`}
+                        className="fw-bold text-decoration-none text-dark"
+                      >
+                        View Question
+                      </a>
+                      <p className="card-text text-muted mb-1">
+                        {a.body.substring(0, 100)}...
+                      </p>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-muted">No answers posted yet.</p>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>

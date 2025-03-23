@@ -13,6 +13,10 @@ const indexRoutes = require('./routes/index');
 const questionRoutes = require('./routes/questions');
 const userRoutes = require('./routes/users');
 const answerRoutes = require('./routes/answers');
+//add1
+const tagsRoutes = require('./routes/tags');
+//add2
+const blogRoutes = require('./routes/blog');
 
 const app = express();
 
@@ -68,6 +72,8 @@ app.use('/', indexRoutes);
 app.use('/questions', questionRoutes);
 app.use('/answers', answerRoutes);
 app.use('/users', userRoutes);
+app.use('/tags', tagsRoutes);
+app.use('/blog', blogRoutes);
 
 // ---------- Start Server ----------
 const PORT = process.env.PORT || 3000;

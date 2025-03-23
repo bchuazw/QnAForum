@@ -5,14 +5,17 @@ const Question = require('../models/Question');
 const Answer = require('../models/Answer');
 const requireLogin = require('../middlewares/requireLogin');
 
-// GET /questions
+// routes/questions.js
 router.get('/', async (req, res) => {
   const sort = req.query.sort || 'newest';
+  const tagFilter = req.query.tag || null; // <-- get the tag from query param
+  
   let sortObj = {};
 
   if (sort === 'newest') {
     sortObj = { createdAt: -1 };
   } else if (sort === 'unanswered') {
+    // ...
     sortObj = { createdAt: -1 };
   } else if (sort === 'upvoted') {
     sortObj = { votes: -1 };
@@ -20,9 +23,17 @@ router.get('/', async (req, res) => {
     sortObj = { updatedAt: -1 };
   }
 
-  // Add .populate('author') so you get the user doc, not just the ID
-  const questions = await Question.find({})
-    .populate('author')           // <-- THIS LINE
+  // Build a query object
+  const query = {};
+
+  // If tagFilter is present, only return questions whose tags array includes that tag
+  if (tagFilter) {
+    query.tags = tagFilter; // e.g. { tags: 'python' }
+  }
+
+  // Populate author so we can display author info
+  const questions = await Question.find(query)
+    .populate('author')
     .sort(sortObj)
     .exec();
 

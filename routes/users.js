@@ -5,9 +5,6 @@ const User = require('../models/User');
 const Question = require('../models/Question');
 const Answer = require('../models/Answer');
 const requireLogin = require('../middlewares/requireLogin');
- 
-// No need to require Multer for profile picture uploads now
-// const upload = require('../middlewares/upload'); 
 
 // GET /users/register
 router.get('/register', (req, res) => {
@@ -69,17 +66,17 @@ router.get('/logout', (req, res) => {
   res.redirect('/');
 });
 
-/// GET /users/profile (protected route)
+// GET /users/profile (protected route)
 router.get('/profile', requireLogin, async (req, res) => {
   const user = await User.findById(req.session.userId);
   if (!user) return res.redirect('/users/login');
 
-  // Aggregate the net vote count for the user's questions.
+  // Aggregate question votes
   const questionVotesAggregate = await Question.aggregate([
     { $match: { author: user._id } },
     { $group: { _id: null, totalVotes: { $sum: '$votes' } } }
   ]);
-  // Aggregate the net vote count for the user's answers.
+  // Aggregate answer votes
   const answerVotesAggregate = await Answer.aggregate([
     { $match: { author: user._id } },
     { $group: { _id: null, totalVotes: { $sum: '$votes' } } }
@@ -124,6 +121,109 @@ router.post('/profile/edit', requireLogin, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(400).send('Error updating profile');
+  }
+});
+
+// GET /users - redirect to /users/list so we don't get "Cannot GET /users"
+router.get('/', (req, res) => {
+  return res.redirect('/users/list');
+});
+
+// GET /users/list - Show all users with profile pic & reputation
+router.get('/list', async (req, res) => {
+  try {
+    // 1) Aggregate question votes grouped by author
+    const questionAgg = await Question.aggregate([
+      { $group: { _id: '$author', totalQVotes: { $sum: '$votes' } } }
+    ]);
+
+    // 2) Aggregate answer votes grouped by author
+    const answerAgg = await Answer.aggregate([
+      { $group: { _id: '$author', totalAVotes: { $sum: '$votes' } } }
+    ]);
+
+    // Convert these aggregates into dictionaries for quick lookup
+    const questionMap = {};
+    questionAgg.forEach((q) => {
+      questionMap[q._id.toString()] = q.totalQVotes;
+    });
+
+    const answerMap = {};
+    answerAgg.forEach((a) => {
+      answerMap[a._id.toString()] = a.totalAVotes;
+    });
+
+    // 3) Fetch all users
+    const allUsers = await User.find({});
+
+    // 4) Build an array of user objects with computed reputation
+    const usersData = allUsers.map((u) => {
+      const qScore = questionMap[u._id.toString()] || 0;
+      const aScore = answerMap[u._id.toString()] || 0;
+      const reputation = qScore + aScore;
+      return {
+        user: u,
+        reputation
+      };
+    });
+
+    // 5) Sort by reputation descending
+    usersData.sort((a, b) => b.reputation - a.reputation);
+
+    // 6) Pass currentUser so the layout can display the correct navbar
+    res.render('users/UsersIndex', {
+      usersData,
+      currentUser: res.locals.currentUser
+    });
+  } catch (err) {
+    console.error('Error fetching users list:', err);
+    res.status(500).send('Error fetching users list');
+  }
+});
+
+// GET /users/:id - Show a single user's public profile
+router.get('/:id', async (req, res) => {
+  try {
+    const userId = req.params.id;
+    // Fetch the user doc
+    const userDoc = await User.findById(userId);
+    if (!userDoc) {
+      return res.status(404).send('User not found');
+    }
+
+    // Aggregate question votes
+    const questionAgg = await Question.aggregate([
+      { $match: { author: userDoc._id } },
+      { $group: { _id: null, totalQVotes: { $sum: '$votes' } } }
+    ]);
+    // Aggregate answer votes
+    const answerAgg = await Answer.aggregate([
+      { $match: { author: userDoc._id } },
+      { $group: { _id: null, totalAVotes: { $sum: '$votes' } } }
+    ]);
+    const qScore = questionAgg.length > 0 ? questionAgg[0].totalQVotes : 0;
+    const aScore = answerAgg.length > 0 ? answerAgg[0].totalAVotes : 0;
+    const reputation = qScore + aScore;
+
+    // Fetch questions & answers for this user
+    const userQuestions = await Question.find({ author: userDoc._id })
+      .sort({ createdAt: -1 })
+      .exec();
+    const userAnswers = await Answer.find({ author: userDoc._id })
+      .sort({ createdAt: -1 })
+      .exec();
+
+    // Pass currentUser so Layout can detect login, plus the new data
+    res.render('users/PublicProfile', {
+      user: userDoc,
+      userQuestions,
+      userAnswers,
+      reputation,
+      currentUser: res.locals.currentUser
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(400).send('Error fetching user');
   }
 });
 

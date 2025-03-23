@@ -2,34 +2,236 @@
    Global / Body
 ------------------------------------------------- */
 body {
-  /* Subtle diagonal stripes using repeating-linear-gradient */
-  background: 
-    linear-gradient(135deg, rgba(255,255,255,0.5) 25%, transparent 25%) 0 0,
-    linear-gradient(135deg, rgba(255,255,255,0.5) 25%, transparent 25%) 0 8px,
-    linear-gradient(135deg, transparent 75%, rgba(255,255,255,0.5) 75%) 0 0,
-    linear-gradient(135deg, transparent 75%, rgba(255,255,255,0.5) 75%) 0 8px,
-    linear-gradient(180deg, #f0f4f8, #e6eef5 85%);
-  background-size: 16px 16px;
-  background-color: #f0f4f8;
-  background-blend-mode: overlay, overlay, overlay, overlay, normal;
+  background: linear-gradient(135deg, #e6f0fa 0%, #f7fafc 100%);
   margin: 0;
   padding: 0;
-  font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-}
-
-/* Navbar brand styling */
-.navbar-brand {
-  font-weight: bold;
-  font-size: 1.2rem;
+  font-family: "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  height: 100vh; /* Ensure body takes full viewport height */
+  display: flex;
+  flex-direction: column;
 }
 
 /* ------------------------------------------------
-   Hero Section
+   Navbar Styling
 ------------------------------------------------- */
-/* A navy-to-midnight gradient */
+.custom-navbar {
+  background: linear-gradient(90deg, #1a3c6d 0%, #2a5b9a 100%); /* Gradient from dark blue to a lighter blue */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  padding: 10px 0; /* Adjust padding for a slimmer navbar */
+}
+
+/* Navbar Brand */
+.custom-brand {
+  font-weight: 800;
+  font-size: 1.5rem;
+  color: #ffffff !important;
+  letter-spacing: 1px;
+  transition: color 0.2s ease;
+}
+
+.custom-brand:hover {
+  color: #c2c2c2 !important; 
+}
+
+/* General Nav Links */
+.custom-nav-link {
+  color: #e6f0fa !important; /* Light blue-white for readability */
+  font-weight: 500;
+  font-size: 1rem;
+  padding: 8px 15px;
+  border-radius: 5px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.custom-nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1); /* Subtle background on hover */
+  color: #ffffff !important;
+}
+
+/* Responsive Adjustments for Navbar */
+@media (max-width: 991px) {
+  .custom-navbar {
+    padding: 8px 0;
+  }
+
+  .custom-brand {
+    font-size: 1.3rem;
+  }
+
+  .custom-nav-link,
+  .custom-login-btn,
+  .custom-signup-btn {
+    margin: 5px 0; /* Stack vertically on mobile */
+    text-align: center;
+    padding: 10px;
+  }
+
+  .navbar-nav {
+    padding: 10px 0;
+  }
+}
+
+/* ------------------------------------------------
+   Login and Sign-Up Pages
+------------------------------------------------- */
+.login-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Distribute space to push footer to bottom */
+  align-items: center;
+  height: calc(100vh - 56px); /* Subtract navbar height (56px is default for Bootstrap navbar) */
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* Header with Logo */
+.login-header {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.login-logo {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #1a3c6d;
+  margin-bottom: 5px;
+  letter-spacing: 1px;
+}
+
+.login-tagline {
+  font-size: 1.1rem;
+  color: #6b7280;
+  margin-bottom: 20px;
+}
+
+/* Centered Form Wrapper */
+.login-form-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+  width: 100%;
+}
+
+.login-card {
+  max-width: 400px;
+  width: 100%;
+  border: none;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.card-body {
+  padding: 2rem !important;
+}
+
+.card-body h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1a3c6d;
+}
+
+.form-label {
+  font-size: 0.95rem;
+  color: #374151;
+}
+
+.form-control {
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  padding: 10px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease;
+}
+
+.form-control:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  outline: none;
+}
+
+.input-group .btn-outline-secondary {
+  border-radius: 0 8px 8px 0;
+  border: 1px solid #d1d5db;
+  border-left: none;
+  background: #f9fafb;
+}
+
+.btn-primary {
+  background-color: #3b82f6;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-primary:hover {
+  background-color: #2563eb;
+  transform: translateY(-1px);
+}
+
+.btn-success {
+  background-color: #10b981; /* Professional green for sign-up */
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-success:hover {
+  background-color: #059669; /* Darker green on hover */
+  transform: translateY(-1px);
+}
+
+.alert-danger {
+  border-radius: 8px;
+  font-size: 0.9rem;
+  padding: 10px;
+}
+
+/* Footer */
+.login-footer {
+  text-align: center;
+  padding: 20px 0;
+  color: #6b7280;
+  font-size: 0.9rem;
+  width: 100%;
+  background: #f7fafc;
+}
+
+/* Responsive Adjustments for Login/Sign-Up */
+@media (max-width: 576px) {
+  .login-card {
+    max-width: 90%;
+  }
+
+  .login-logo {
+    font-size: 2rem;
+  }
+
+  .login-tagline {
+    font-size: 1rem;
+  }
+
+  .login-container {
+    padding: 10px;
+  }
+}
+
+/* ------------------------------------------------
+   Home Page - Hero Section
+------------------------------------------------- */
 .forum-hero {
-  background: linear-gradient(135deg, #0d3b66, #1d3557);
-  min-height: 40vh;
+  background: linear-gradient(135deg, rgba(13, 59, 102, 0.9), rgba(29, 53, 87, 0.9)), url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80');
+  background-size: cover;
+  background-position: center;
+  min-height: 50vh;
+  border-radius: 0;
   display: flex;
   align-items: center;
   color: #fff;
@@ -42,91 +244,67 @@ body {
   100% { opacity: 1; }
 }
 
-/* CTA button with teal accent */
+.forum-hero h1 {
+  font-size: 3rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.forum-hero .lead {
+  font-size: 1.3rem;
+  color: #e6f0fa;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
 .btn-forum-cta {
-  background-color: #2a9d8f;
-  border-color: #2a9d8f;
+  background-color: #3b82f6;
+  border-color: #3b82f6;
   color: #fff;
+  padding: 12px 30px;
+  font-weight: 500;
   transition: transform 0.2s, box-shadow 0.2s;
 }
+
 .btn-forum-cta:hover {
   transform: scale(1.05);
-  box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  background-color: #2563eb;
 }
 
-/* Optional lead text styling */
-.lead {
-  font-size: 1.2rem;
-  color: #f1f1f1;
+.btn-outline-light {
+  border-color: #fff;
+  color: #fff;
+  padding: 12px 30px;
+  font-weight: 500;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-outline-light:hover {
+  transform: scale(1.05);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
 }
 
 /* ------------------------------------------------
-   Content Area
+   Home Page - Main Content Section
 ------------------------------------------------- */
-/* Use transparent to reveal background pattern */
 .forum-content {
   background-color: transparent;
-  padding-top: 40px;
-  padding-bottom: 40px;
+  padding-top: 50px;
+  padding-bottom: 50px;
 }
 
-/* ------------------------------------------------
-   Left Sidebar for Filters
-------------------------------------------------- */
-.sidebar-nav {
-  background-color: #fff;
-  border: 2px solid #2a9d8f;
-  border-radius: 6px;
-  padding: 12px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  margin-bottom: 20px;
+.forum-content h2 {
+  color: #1a3c6d;
+  font-weight: 700;
 }
 
-.sidebar-nav .nav-link {
-  color: #2a9d8f;
-  font-weight: bold;
-  margin: 6px 0;
-  transition: background-color 0.2s, color 0.2s;
-}
-
-.sidebar-nav .nav-link:hover {
-  background-color: #2a9d8f;
-  color: #fff;
-  text-decoration: none;
-  border-radius: 4px;
-}
-
-.sidebar-nav .nav-link.active {
-  background-color: #2a9d8f;
-  color: #fff;
-  border-radius: 4px;
-}
-
-/* ------------------------------------------------
-   Question List Items
-------------------------------------------------- */
-.question-list-item {
-  background-color: #fff;
-  border: 2px solid #2a9d8f;
-  border-radius: 6px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-  padding: 16px;
-  margin-bottom: 20px;
-}
-
-/* Optional inner content styling */
-.question-list-item-content {
-  background-color: #fdfefe;
-  padding: 8px;
-  border-radius: 4px;
-}
-
-/* ------------------------------------------------
-   "Stack of Cards" for Top Questions
-------------------------------------------------- */
+/* Stack of Top Questions */
 .stack-container {
   position: relative;
-  height: 300px; /* adjust as desired */
+  height: 350px;
   overflow: visible;
 }
 
@@ -135,130 +313,381 @@ body {
   top: 0;
   left: 0;
   width: 100%;
-  transition: transform 0.4s ease, z-index 0.4s ease;
+  transition: transform 0.5s ease, z-index 0.5s ease, opacity 0.5s ease;
 }
 
 .stack-pos-0 {
   z-index: 3;
   transform: translateY(0) scale(1);
+  opacity: 1;
 }
+
 .stack-pos-1 {
   z-index: 2;
-  transform: translateY(20px) scale(0.95);
+  transform: translateY(30px) scale(0.95);
+  opacity: 0.8;
 }
+
 .stack-pos-2 {
   z-index: 1;
-  transform: translateY(40px) scale(0.9);
+  transform: translateY(60px) scale(0.9);
+  opacity: 0.6;
 }
 
 .stack-card {
-  border: 3px solid #2a9d8f;
-  border-radius: 6px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  border: 2px solid #3b82f6;
+  border-radius: 10px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
   height: 100%;
-  animation: fadeInStack 0.4s ease;
   background-color: #fff;
+  transition: transform 0.3s ease;
 }
 
-@keyframes fadeInStack {
-  0% { transform: translateY(20px); opacity: 0; }
-  100% { transform: translateY(0); opacity: 1; }
+.stack-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
-/* Up/Down controls inside stack container */
+.stack-card h5 {
+  color: #1a3c6d;
+}
+
+.stack-card .btn-outline-primary {
+  border-color: #3b82f6;
+  color: #3b82f6;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.stack-card .btn-outline-primary:hover {
+  background-color: #3b82f6;
+  color: #fff;
+}
+
+/* Animation for card rotation */
+.animate-slide {
+  animation: slideCard 0.5s ease-in-out;
+}
+
+@keyframes slideCard {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Remove or comment out the old absolute positioning:
 .stack-controls {
   position: absolute;
-  bottom: 40px; /* Adjust to move controls closer to the cards */
+  bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  gap: 8px;
+  gap: 10px;
+}
+*/
+
+.stack-controls {
+  display: inline-flex;  /* place them inline beside heading */
+  gap: 10px;
+  margin-left: 15px;     /* optional extra spacing */
 }
 
+/* Make the circular buttons center the icon */
 .stack-controls button {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.5);
+  background: #3b82f6;
   color: #fff;
   border: none;
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.1s;
+  display: flex;         
+  align-items: center;
+  justify-content: center;
 }
+
 .stack-controls button:hover {
-  background: rgba(0, 0, 0, 0.8);
+  background: #2563eb;
+  transform: scale(1.1);
 }
+
 .stack-controls i {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
+}
+
+
+/* Overflow Blog */
+.overflow-blog {
+  border: 2px solid #3b82f6;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+.overflow-blog h5 {
+  background-color: #3b82f6;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 5px;
+  display: inline-block;
+  margin-bottom: 15px;
+}
+
+.overflow-blog a {
+  color: #3b82f6;
+  transition: color 0.2s ease;
+}
+
+.overflow-blog a:hover {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+/* Responsive Adjustments for Home Page */
+@media (max-width: 768px) {
+  .forum-hero {
+    min-height: 40vh;
+  }
+
+  .forum-hero h1 {
+    font-size: 2.2rem;
+  }
+
+  .forum-hero .lead {
+    font-size: 1.1rem;
+  }
+
+  .stack-container {
+    height: 400px; /* Adjust for smaller screens */
+  }
+
+  .stack-pos-1,
+  .stack-pos-2 {
+    opacity: 0; /* Hide lower cards on mobile for clarity */
+  }
+}
+/* ------------------------------------------------
+   Questions Page - Sidebar
+------------------------------------------------- */
+.sidebar-nav {
+  background: linear-gradient(90deg, #1a3c6d 0%, #2a5b9a 100%); /* Match navbar gradient */
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-nav .nav-link {
+  color: #e6f0fa;
+  font-weight: 500;
+  font-size: 1rem;
+  padding: 10px 15px;
+  border-radius: 5px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.sidebar-nav .nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.sidebar-nav .nav-link.active {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+.sidebar-nav hr {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Mobile Sidebar Dropdown */
+.sidebar-nav-mobile {
+  background-color: #ffffff;
+  border: 2px solid #3b82f6;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 1rem;
+  color: #1a3c6d;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-nav-mobile:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  outline: none;
 }
 
 /* ------------------------------------------------
-   Answer Stats & Overflow Blog Box
+   Questions Page - Question List Items
 ------------------------------------------------- */
+.question-list-item {
+  background-color: #fff;
+  border: 2px solid #3b82f6;
+  border-radius: 10px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.question-list-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.question-list-item h5 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.question-list-item h5 a {
+  color: #1a3c6d;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.question-list-item h5 a:hover {
+  color: #3b82f6;
+}
+
+.question-list-item .text-muted {
+  font-size: 0.95rem;
+  color: #6b7280;
+}
+
+.question-list-item .badge {
+  background-color: #3b82f6;
+  color: #fff;
+  font-size: 0.85rem;
+  padding: 5px 10px;
+  border-radius: 12px;
+}
+
+/* Stats Box */
 .stats-box {
-  background-color: rgba(42, 157, 143, 0.1);
-  border: 2px solid #2a9d8f;
-  color: #2a9d8f;
-  border-radius: 6px;
-  padding: 12px;
+  background-color: #f7fafc;
+  border: 2px solid #3b82f6;
+  border-radius: 8px;
+  padding: 10px;
   text-align: center;
-  font-weight: bold;
   min-width: 80px;
-  margin-right: 16px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .stats-box .stat-value {
   font-size: 1.2rem;
+  font-weight: 600;
+  color: #1a3c6d;
   margin-bottom: 2px;
 }
 
 .stats-box .stat-label {
   font-size: 0.85rem;
-  color: #555;
+  color: #6b7280;
 }
 
-/* Overflow Blog Box */
-.overflow-blog {
-  border: 2px solid #2a9d8f;
-  background-color: #fff;
-  border-radius: 6px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-  margin-bottom: 20px;
-  padding: 16px;
-  position: relative;
+.stats-box hr {
+  margin: 5px 0;
+  border-color: #d1d5db;
 }
 
-.overflow-blog h5 {
-  background-color: #2a9d8f;
-  color: #fff;
-  padding: 8px 12px;
-  border-radius: 4px;
+/* Animation for Question List Items */
+.animate-fade-in {
+  animation: fadeInQuestion 0.5s ease-in-out;
+}
+
+@keyframes fadeInQuestion {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive Adjustments for Questions Page */
+@media (max-width: 767px) {
+  .question-list-item {
+    padding: 15px;
+  }
+
+  .stats-box {
+    min-width: 60px;
+  }
+
+  .question-list-item h5 {
+    font-size: 1.1rem;
+  }
+}
+
+/* ------------------------------------------------
+   Ask Question Page
+------------------------------------------------- */
+/* Ensure textarea matches input styling */
+textarea.form-control {
+  resize: vertical; /* Allow vertical resizing only */
+  min-height: 120px;
+}
+
+/* Tooltip icon for tags */
+.form-label .bi-info-circle {
+  cursor: help;
+  font-size: 0.9rem;
+}
+
+/* Error messages */
+.text-danger {
+  font-size: 0.85rem;
+  margin-top: 5px;
   display: inline-block;
-  margin-top: 0;
-  margin-bottom: 12px;
 }
 
-.overflow-blog ul {
-  margin-top: 0;
-  padding-left: 20px;
+.text-danger i {
+  margin-right: 5px;
 }
 
-.overflow-blog a {
-  color: #2a9d8f;
-  text-decoration: none;
+.question-card {
+  max-width: 90%;    /* Adjust as needed (e.g., 90% of the container width) */
+  width: 100%;
+  margin: 0 auto;    /* Center the card */
+  border: none;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  padding: 2rem;     /* Increase padding if desired */
 }
 
-.overflow-blog a:hover {
-  text-decoration: underline;
+.question-link {
+  text-decoration: none;        /* normal state: no underline */
+  transition: color 0.2s ease; /* optional smooth color transition */
 }
 
-.update-btn,
-.back-btn {
-  transition: transform 0.2s, box-shadow 0.2s;
+.question-link:hover {
+  text-decoration: underline;   /* underline on hover */
+  color: #1a3c6d;               /* slightly darker color on hover if you like */
 }
 
-.update-btn:hover,
-.back-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+/* The container that holds all snowflakes */
+.snow-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* so clicks pass through */
+  overflow: hidden;     /* hide flakes once they exit */
+  z-index: 1;           /* place behind text if you want text on top */
+}
+
+/* Each individual snowflake */
+.snowflake {
+  position: absolute;
+  top: -5%; /* start slightly above the container */
+  color: #fff;
+  opacity: 0.7;  /* translucent */
+  font-size: 1.2rem;
+  animation-name: fall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(110%); /* move beyond container's bottom */
+  }
 }
